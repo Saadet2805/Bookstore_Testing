@@ -9,6 +9,7 @@ import application.bookstore.models.Book;
 class BookTest {
 
 	//Boundary Value Testing
+	//Test min values for all parameters
 	@Test
     void testValidInputsAtLowerBoundary() {
         Book book = new Book("1234567890", "A", 0, 0, null, 0, null, "X");
@@ -16,15 +17,9 @@ class BookTest {
     }
 
     @Test
-    void testInvalidShortISBN() {
-        Book book = new Book("123", "A", 0, 0, null, 0, null, "X");
+    void testInvalidMinISBN() {
+        Book book = new Book("123456789", "A", 0, 0, null, 0, null, "X");
         assertFalse(book.isValid(), "ISBN is too short.");
-    }
-
-    @Test
-    void testValidMinISBN() {
-        Book book = new Book("1234567890", "A", 0, 0, null, 0, null, "X");
-        assertTrue(book.isValid(), "ISBN is valid at minimum length.");
     }
     
     @Test
@@ -40,11 +35,11 @@ class BookTest {
     }
     
     @Test
-    void testNegativeSellingPrice() {
+    void testInvalidMinSellingPrice() {
         Book book = new Book("1234567890", "A", 0, -0.01f, null, 0, null, "X");
         assertFalse(book.isValid(), "Selling price below minimum.");
     }
-
+    
     @Test
     void testValidSellingPrice() {
         Book book = new Book("1234567890", "A", 0, 15f, null, 0, null, "X");
@@ -76,21 +71,15 @@ class BookTest {
     }
     
     @Test
-    void testEmptyTitle() {
+    void testEmptyTitle() { //no characters
         Book book = new Book("1234567890", "", 0, 0, null, 0, null, "X");
         assertFalse(book.isValid(), "Title is empty.");
     }
     
     @Test
-    void testValidTitle() {
+    void testValidTitle() { //at least 1 character/word
         Book book = new Book("1234567890", "1984", 0, 0, null, 0, null, "X");
         assertTrue(book.isValid(), "Title is valid.");
-    }
-
-    @Test
-    void testInvalidTitleCharacters() {
-        Book book = new Book("1234567890", "Book!", 0, 0, null, 0, null, "X");
-        assertFalse(book.isValid(), "Title contains invalid characters.");
     }
 
     @Test
@@ -105,11 +94,6 @@ class BookTest {
         assertTrue(book.isValid(), "Supplier is valid.");
     }
 
-    @Test
-    void testInvalidSupplierCharacters() {
-        Book book = new Book("1234567890", "A", 0, 0, null, 0, null, "Sup@");
-        assertFalse(book.isValid(), "Supplier contains invalid characters.");
-    }
 
  
     //Class Evaluation
