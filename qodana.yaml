@@ -1,0 +1,6 @@
+version: "1.0"
+linter: jetbrains/qodana
+output-dir: qodana-report
+checks:
+  - name: <specific-check>
+    enabled: true
