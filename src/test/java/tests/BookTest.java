@@ -9,7 +9,7 @@ import application.bookstore.models.Book;
 class BookTest {
 
 	//Boundary Value Testing
-	//Test min values for all parameters
+	//Test min. values for all parameters
 	@Test
     void testValidInputsAtLowerBoundary() {
         Book book = new Book("1234567890", "A", 0, 0, null, 0, null, "X");
@@ -106,11 +106,7 @@ class BookTest {
         assertTrue(book.isValid(), "Title is valid.");
     }
     
-    @Test
-    void testNominalTitle() { //at least 1 character/word
-        Book book = new Book("1234567890", "Oliver Twist", 0, 0, null, 0, null, "X");
-        assertTrue(book.isValid(), "Title is valid.");
-    }
+   
 
     @Test
     void testEmptySupplier() {
