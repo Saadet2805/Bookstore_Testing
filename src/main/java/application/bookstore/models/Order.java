@@ -2,6 +2,7 @@ package application.bookstore.models;
 
 import application.bookstore.auxiliaries.FileHandler;
 import application.bookstore.views.OrderView;
+import java.io.Serializable;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -124,23 +125,25 @@ public  class Order extends BaseModel implements Serializable {
     }
     
     
-    public void print(){
-    	PrintWriter writer=null;
+    public void print(PrintWriter writer){
+    	
 			try {
-				writer = new PrintWriter(new File("bills/" + orderID+".txt"));
-			} catch (FileNotFoundException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-        	 
-        			String isbn= this.getIsbn();
-               		String clientName =this.getClientName();
-                    float price = this.getPrice();
-                    int quantity = this.getQuantity();
-                    float total =  price * quantity;
-                    writer.print("Order: "+orderID+"\nDate: "+date+"\nClient: "+clientName+"\nBooks Ordered: \n" + quantity + "ISBN: "+isbn+"\n Price" + price +
-                    		"\n***************\nTotal: " + total);
-             
+				 String isbn = this.getIsbn();
+			        String clientName = this.getClientName();
+			        float price = this.getPrice();
+			        int quantity = this.getQuantity();
+			        float total = price * quantity;
+			        writer.print("Order: " + orderID + "\nDate: " + date + "\nClient: " + clientName +
+		                     "\nBooks Ordered: \n" + quantity + " ISBN: " + isbn + "\n Price " + price +
+		                     "\n***************\nTotal: " + total);
+			} 
+			
+     finally 
+     {
+        writer.close();
+    }
+   
+        		
         	 writer.close();
         	 System.out.println("/n New Bill Printed /n");
         	 System.out.println("bills/" + orderID+".txt");
@@ -201,6 +204,7 @@ public  class Order extends BaseModel implements Serializable {
         return true;
     }
 
+    
     public boolean isValid() {
         return clientName.length() > 0;
     }

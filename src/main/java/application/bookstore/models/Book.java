@@ -4,7 +4,7 @@ import java.io.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import java.io.Serializable;
 import application.bookstore.models.Author;
 import application.bookstore.models.BaseModel;
 
@@ -49,7 +49,7 @@ public class Book extends BaseModel  implements Serializable{
 
 	public static final String FILE_PATH = "data/books.ser";
     private static final File DATA_FILE = new File(FILE_PATH);
-    private static final ArrayList<Book> books = new ArrayList<>();
+    public static final ArrayList<Book> books = new ArrayList<>();
     
     public Book(){}
 

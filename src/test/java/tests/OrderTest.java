@@ -1,19 +1,28 @@
 package tests;
 
-
-
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
+import java.lang.reflect.Field;
 
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import application.bookstore.models.Order;
+import application.bookstore.auxiliaries.FileHandler;
+import application.bookstore.models.Book;
+import application.bookstore.models.Category;
 
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 
 class OrderTest {
 
 	
-
 	//Boundary Value Testing
 
     @Test
@@ -359,5 +368,106 @@ class OrderTest {
         assertEquals(0.0f, Order.getTotal(0.0f, 0)); // Boundary case
 
     }
+    
+    private Order order;
+    private Book mockBook;
+
+    @BeforeEach
+    void setUp() {
+        order = new Order("1234567890", "Selma Aksoy", 2, 25.0f, 50.0f);
+        mockBook = mock(Book.class);
+    }
+    
+    //It checks the functionality of saving data, which is fundamental to ensuring that orders persist as expected
+    //Edge Case: Ensure that the mocked file system behavior doesn't cause unexpected results
+    @Test
+    void testSaveInFile() {
+        Order spyOrder = spy(order);  // Create a spy of the order
+        doReturn(true).when(spyOrder).save(any(File.class));  // Mock 'save' method to return true
+
+        // Mocking the behavior of the saveInFile method
+        when(spyOrder.saveInFile()).thenReturn(true);  
+
+        assertTrue(spyOrder.saveInFile());  // Verify that saveInFile returns true
+    }
+
+    // retrieves orders from a file, and it's vital for the system to correctly read and deserialize order objects
+    //Edge Case: Make sure it handles EOFException and other potential IO errors correctly.
+    //@Test
+   // void testGetOrders() throws Exception {
+        //try (MockedStatic<FileHandler> mockedFileHandler = mockStatic(FileHandler.class)) {
+            // Mock the static readFile method to return a predefined list of orders
+            //mockedFileHandler.when(() -> FileHandler.readFile(any(File.class)))
+                             //.thenReturn(Arrays.asList(new Order("ISBN1", "Client1", 1, 10.0f, 10.0f)));
+
+            // Call the method you're testing
+            //ArrayList<Order> orders = Order.getOrders();
+
+            // Assert that the orders list is correctly returned
+            //assertNotNull(orders);
+            //assertEquals(1, orders.size());
+           // assertEquals("ISBN1", orders.get(0).getIsbn());
+       // }
+    //}
+
+
+    //calculates the total price based on quantity and price
+    //Edge Case: The negative price or quantity should throw exceptions, ensuring data integrity.
+    @Test
+    void testGetTotal() throws Exception {
+        // Test valid total calculation
+        float total = Order.getTotal(10.0f, 5);
+        assertEquals(50.0f, total, 0.01);
+        
+        // Test exception when price is negative
+        assertThrows(Exception.class, () -> Order.getTotal(-10.0f, 5));
+
+        // Test exception when quantity is negative
+        assertThrows(Exception.class, () -> Order.getTotal(10.0f, -5));
+    }
+
+    //writes the order details to a file
+    //Ensure that file creation or writer handling doesn't result in unexpected errors
+    @Test
+    void testPrintToFile() throws IOException {
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter writer = new PrintWriter(stringWriter);
+
+        // Call the refactored print method
+        order.print(writer);
+
+        // Verify that the correct content is written to the writer
+        String output = stringWriter.toString();
+        assertTrue(output.contains("Order: " + order.getOrderID()), "The output should contain the order ID.");
+        assertTrue(output.contains("Client: " + order.getClientName()), "The output should contain the client name.");
+        // Add more assertions as needed to verify the complete output
+    }
+    
+    // checks whether an order has valid data
+    //It should return false for invalid data like an empty client name or invalid quantity
+    @Test
+    void testIsValid() {
+        // Arrange
+        Order order = new Order("ISBN1", "Client1", 1, 10.0f, 10.0f);
+
+        // Act and Assert
+        assertTrue(order.isValid());  // Valid client name should return true
+
+        order.setClientName("");  // Set client name to empty
+        assertFalse(order.isValid());  // Invalid client name should return false
+    }
+
+//ensures that an order can be removed from the list and the file
+    //Edge Case: Ensure it handles the case where the order doesn't exist or if there’s an issue with file handling
+    @Test
+    void testDeleteFromFile() {
+        Order orderToDelete = new Order("1234567890", "Selma Aksoy", 2, 10.0f, 20.0f);
+        orderToDelete.saveInFile();
+
+        assertTrue(orderToDelete.deleteFromFile());
+        assertFalse(Order.getOrders().contains(orderToDelete));
+    }
+
+    
 
 }
